@@ -3,8 +3,15 @@
 namespace TCG\Voyager\Commands;
 
 use Illuminate\Foundation\Console\ModelMakeCommand;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * Laravel tags ModelMakeCommand with #[AsCommand(name: 'make:model')], and Symfony
+ * reads that attribute from the parent when a subclass does not carry its own.
+ * Without this attribute Voyager would silently take over `make:model`.
+ */
+#[AsCommand(name: 'voyager:make:model')]
 class MakeModelCommand extends ModelMakeCommand
 {
     /**
@@ -56,7 +63,7 @@ class MakeModelCommand extends ModelMakeCommand
     {
         $traitIncl = $trait = '';
 
-        if ($this->option('softdelete')) {
+        if ($this->getDefinition()->hasOption('softdelete') && $this->option('softdelete')) {
             $traitIncl = 'use Illuminate\Database\Eloquent\SoftDeletes;';
             $trait = 'use SoftDeletes;';
         }
