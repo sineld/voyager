@@ -3,15 +3,8 @@
 namespace TCG\Voyager\Commands;
 
 use Illuminate\Foundation\Console\ModelMakeCommand;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputOption;
 
-/**
- * Laravel tags ModelMakeCommand with #[AsCommand(name: 'make:model')], and Symfony
- * reads that attribute from the parent when a subclass does not carry its own.
- * Without this attribute Voyager would silently take over `make:model`.
- */
-#[AsCommand(name: 'voyager:make:model')]
 class MakeModelCommand extends ModelMakeCommand
 {
     /**
@@ -20,6 +13,17 @@ class MakeModelCommand extends ModelMakeCommand
      * @var string
      */
     protected $name = 'voyager:make:model';
+
+    /**
+     * Laravel tags ModelMakeCommand with #[AsCommand(name: 'make:model')], and Symfony
+     * reads that attribute from the parent when a subclass does not declare its own
+     * name, which registered this command as `make:model` as well. Overriding the
+     * accessor keeps the attribute out of it entirely.
+     */
+    public static function getDefaultName(): ?string
+    {
+        return 'voyager:make:model';
+    }
 
     /**
      * The console command description.
