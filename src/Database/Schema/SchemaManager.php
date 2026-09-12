@@ -26,19 +26,8 @@ abstract class SchemaManager
     public static function listTables()
     {
         $tables = [];
-        
-        // Get tables only from current database
-        $currentDb = DB::getDatabaseName();
-        $tablesFromDb = DB::select("
-            SELECT TABLE_NAME as name 
-            FROM information_schema.tables 
-            WHERE table_schema = ? 
-            AND table_type = 'BASE TABLE'
-            ORDER BY TABLE_NAME
-        ", [$currentDb]);
 
-        foreach ($tablesFromDb as $tableInfo) {
-            $tableName = $tableInfo->name;
+        foreach (static::listTableNames() as $tableName) {
             $tables[$tableName] = static::listTableDetails($tableName);
         }
 
@@ -120,35 +109,45 @@ abstract class SchemaManager
         return $columnNames;
     }
 
+    /**
+     * Table names of the current connection, driver agnostic.
+     *
+     * Laravel scopes getTableListing() to the connection's own database/schema,
+     * so this works the same on MySQL, MariaDB, PostgreSQL, SQLite and SQL Server.
+     */
     public static function listTableNames()
     {
-        $tableNames = [];
-        
-        // Get tables only from current database
-        $currentDb = DB::getDatabaseName();
-        $tablesFromDb = DB::select("
-            SELECT TABLE_NAME as name 
-            FROM information_schema.tables 
-            WHERE table_schema = ? 
-            AND table_type = 'BASE TABLE'
-            ORDER BY TABLE_NAME
-        ", [$currentDb]);
+        $tableNames = LaravelSchema::getTableListing(schemaQualified: false);
 
-        foreach ($tablesFromDb as $tableInfo) {
-            $tableNames[] = $tableInfo->name;
-        }
+        sort($tableNames);
 
         return $tableNames;
     }
 
-    public static function getDoctrineTable($table)
+    /**
+     * Create a table from a Voyager Table object (or its array form).
+     */
+    public static function createTable($table)
     {
-        throw new \RuntimeException('Doctrine tables are not supported in Laravel 12. Use Laravel Schema methods instead.');
+        Type::registerCustomPlatformTypes();
+
+        if (!$table instanceof Table) {
+            $table = Table::make($table);
+        }
+
+        SchemaBuilder::createTable($table);
+
+        return $table;
     }
 
-    public static function getDoctrineColumn($table, $column)
+    public static function dropTable($tableName)
     {
-        throw new \RuntimeException('Doctrine columns are not supported in Laravel 12. Use Laravel Schema methods instead.');
+        LaravelSchema::dropIfExists($tableName);
+    }
+
+    public static function renameTable($from, $to)
+    {
+        LaravelSchema::rename($from, $to);
     }
 
     public static function getDatabasePlatformName()

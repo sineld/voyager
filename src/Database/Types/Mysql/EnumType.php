@@ -2,7 +2,6 @@
 
 namespace TCG\Voyager\Database\Types\Mysql;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Database\Types\Type;
 
@@ -10,7 +9,7 @@ class EnumType extends Type
 {
     public const NAME = 'enum';
 
-    public function getSQLDeclaration(array $field, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $field, $platform = null)
     {
         $enumField = collect(DB::select(DB::raw('SHOW COLUMNS FROM '.DB::getQueryGrammar()->wrap($this->tableName))))->where('Field', $field['name'])->first();
 

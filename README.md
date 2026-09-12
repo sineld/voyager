@@ -1,130 +1,144 @@
 <p align="center"><a href="https://voyager.devdojo.com" target="_blank"><img width="400" src="https://s3.amazonaws.com/thecontrolgroup/voyager.png"></a></p>
 
-> [!Note]
-> **Voyager продолжает развиваться!** Форк проекта активно поддерживается и обновляется для совместимости с новыми версиями Laravel.
+<p align="center">
+  <a href="https://github.com/sineld/voyager/actions/workflows/tests.yml"><img src="https://github.com/sineld/voyager/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://packagist.org/packages/sineld/voyager"><img src="https://img.shields.io/packagist/v/sineld/voyager" alt="Latest version"></a>
+  <a href="https://packagist.org/packages/sineld/voyager"><img src="https://img.shields.io/packagist/dt/sineld/voyager" alt="Downloads"></a>
+  <a href="license"><img src="https://img.shields.io/packagist/l/sineld/voyager" alt="License"></a>
+</p>
 
-### 🚀 Новые возможности и обновления
+# Voyager — The Missing Laravel Admin
 
-**Поддержка Laravel 12:**
-- Полная совместимость с Laravel 12.28.1
-- Обновлены зависимости для работы с современными версиями PHP
-- Исправлены проблемы с миграциями
+A maintained fork of [Voyager](https://github.com/thedevdojo/voyager), the BREAD/CRUD admin
+package for Laravel: media manager, menu builder, settings, roles and permissions, and a
+database/table editor.
 
-**Основные изменения:**
-- Удалены устаревшие методы Doctrine из миграций
-- Обновлены версии зависимостей в composer.json
-- Улучшена совместимость с современными версиями PHP 8.2+
+Upstream `tcg/voyager` stopped at Laravel 11 and PHP 8.3. This fork carries it forward to
+**Laravel 12 / 13 / 14** on **PHP 8.4 / 8.5 / 8.6**, and repairs the features that broke
+when Laravel dropped `doctrine/dbal` and Intervention Image moved to v3.
 
-**Установка для Laravel 12:**
-```bash
-composer require kupidonkhv/voyager-fork:^1.7.1
-```
+## Requirements
 
-Voyager остается отличным выбором для быстрого создания административных панелей с поддержкой BREAD системы!
+| | Supported |
+|---|---|
+| PHP | 8.4, 8.5, 8.6 |
+| Laravel | 12.x, 13.x, 14.x |
+| Databases | MySQL, MariaDB, PostgreSQL, SQLite, SQL Server |
 
-# **V**oyager - The Missing Laravel Admin
-Made with ❤️ by [The Control Group](https://www.thecontrolgroup.com)
-
-![Voyager Screenshot](https://s3.amazonaws.com/thecontrolgroup/voyager-screenshot.png)
-
-Website & Documentation: https://voyager.devdojo.com/
-
-Video Tutorial Here: https://voyager.devdojo.com/academy/
-
-Join our Slack chat: https://voyager-slack-invitation.herokuapp.com/
-
-View the Voyager Cheat Sheet: https://voyager-cheatsheet.ulties.com/
-
-<hr>
-
-Laravel Admin & BREAD System (Browse, Read, Edit, Add, & Delete), supporting Laravel 10, 11, and 12!
-
-> Looking for older Laravel versions?
-> - Laravel 8-9: Use Voyager 1.6.x
-> - Laravel 6-7: Use [Voyager 1.5](https://github.com/the-control-group/voyager/tree/1.5)
-
-## Installation Steps
-
-### 1. Require the Package
-
-After creating your new Laravel application you can include the Voyager package with the following command:
+## Installation
 
 ```bash
-composer require kupidonkhv/voyager-fork
+composer require sineld/voyager
 ```
 
-> **Поддержка Laravel 10, 11, 12:**
-> Текущая версия Voyager полностью совместима с Laravel 10, 11 и 12. Для установки используйте:
-
-```bash
-composer require kupidonkhv/voyager-fork:^1.7.1
-```
-
-### 2. Add the DB Credentials & APP_URL
-
-Next make sure to create a new database and add your database credentials to your .env file:
-
-```
-DB_HOST=localhost
-DB_DATABASE=homestead
-DB_USERNAME=homestead
-DB_PASSWORD=secret
-```
-
-You will also want to update your website URL inside of the `APP_URL` variable inside the .env file:
-
-```
-APP_URL=http://localhost:8000
-```
-
-### 3. Run The Installer
-
-Lastly, we can install voyager. You can do this either with or without dummy data.
-The dummy data will include 1 admin account (if no users already exists), 1 demo page, 4 demo posts, 2 categories and 7 settings.
-
-To install Voyager without dummy simply run
+Then install Voyager. Use `--with-dummy` to also get demo data (pages, posts, users, menus):
 
 ```bash
 php artisan voyager:install
-```
 
-If you prefer installing it with dummy run
-
-```bash
+# or, with demo content
 php artisan voyager:install --with-dummy
 ```
 
-And we're all good to go!
-
-Start up a local development server with `php artisan serve` And, visit [http://localhost:8000/admin](http://localhost:8000/admin).
-
-## Creating an Admin User
-
-If you did go ahead with the dummy data, a user should have been created for you with the following login credentials:
-
->**email:** `admin@admin.com`   
->**password:** `password`
-
-NOTE: Please note that a dummy user is **only** created if there are no current users in your database.
-
-If you did not go with the dummy user, you may wish to assign admin privileges to an existing user.
-This can easily be done by running this command:
-
-```bash
-php artisan voyager:admin your@email.com
-```
-
-If you did not install the dummy data and you wish to create a new admin user, you can pass the `--create` flag, like so:
+Create an admin user:
 
 ```bash
 php artisan voyager:admin your@email.com --create
 ```
 
-And you will be prompted for the user's name and password.
+The panel lives at `/admin` by default. Change it with `voyager.user.redirect` and the
+route prefix in `config/voyager.php`.
 
-## Sponsors
+### Upgrading from `tcg/voyager` or `kupidonkhv/voyager-fork`
 
-Voyager is proudly supported by our amazing sponsors. A big thank you to:
+The namespace is unchanged (`TCG\Voyager\…`), so it is a drop-in replacement:
 
-[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=dc19b9819d06&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+```bash
+composer remove tcg/voyager        # or kupidonkhv/voyager-fork
+composer require sineld/voyager
+```
 
+Nothing in your BREADs, migrations, published views or models needs to change. If you
+published Voyager's views from an older release, delete
+`resources/views/vendor/voyager` so the current views are used.
+
+## What this fork fixes
+
+Everything below was broken in `kupidonkhv/voyager-fork` v1.7.43 and is fixed here.
+
+**The table editor works again (Tools → Database).** `SchemaManager::createTable()` was
+called but never defined, and `DatabaseUpdater::updateTable()` threw
+`RuntimeException('temporarily disabled')`. Creating, altering, renaming and dropping
+tables is reimplemented on Laravel's native schema builder — no `doctrine/dbal`.
+
+**PostgreSQL no longer fatals.** 47 type classes still imported
+`Doctrine\DBAL\Platforms\AbstractPlatform`, a class that is not installed, so loading the
+Postgres type set was a hard fatal error.
+
+**Every driver works again.** BREAD and database table listing ran a hardcoded
+`information_schema` query, which is MySQL-only. Replaced with Laravel's
+`Schema::getTableListing()`.
+
+**Media manager uploads work.** The media controller still used the Intervention Image v2
+API (`encode($ext, $quality)`, `fit()`, `insert()`, and the `Intervention\Image\Facades\Image`
+facade) against a v3 dependency.
+
+**Laravel 13 image binding conflict resolved.** Laravel 13 ships its own image abstraction
+and claims the same `image` container binding that Intervention's facade uses, so Voyager
+could be handed the wrong manager. Voyager now builds its own `ImageManager` and no longer
+touches that binding — while still honouring the driver in `config/image.php`. Previously
+the BREAD image handlers hardcoded GD and silently ignored an Imagick configuration.
+
+**Date columns render again.** Carbon 3 removed `formatLocalized()`, which the BREAD browse
+and read views called for every `date`/`timestamp` column — a 500 on any BREAD with a
+formatted date. Both strftime-style formats (`%B %e, %Y`) from older BREADs and plain PHP
+`date()` formats are accepted.
+
+**Column defaults stopped growing quotes.** Drivers report defaults as SQL literals
+(`'hello'`), which Voyager stored verbatim, so every save wrapped the value in another pair
+of quotes.
+
+**Schema reads are correct.** Laravel's schema reader returns `nullable`, `auto_increment`,
+`primary` and `unique`; Voyager expected `notnull`, `autoincrement`, `is_primary` and
+`is_unique`, so nullability, auto-increment and index types were misread. `getNotnull()`
+also returned the inverse of the truth.
+
+**The version number shows up.** `findVersion()` looked for the hardcoded package name
+`tcg/voyager`, so any fork reported an empty version in the admin footer. It now reads the
+package's own name from its `composer.json`.
+
+**PHP 8.4 deprecations** (implicit nullable parameters) and a stray debug `file_put_contents`
+to `storage/logs/voyager_debug.log` are gone.
+
+## Testing
+
+```bash
+composer install
+vendor/bin/phpunit
+```
+
+135 tests run green on PHP 8.4 and 8.5 against Laravel 12 and 13. CI covers that matrix on
+every push and weekly.
+
+PHPUnit marks every test "risky" because `laravel/browser-kit-testing` does not restore its
+error handlers. That is upstream and does not affect results.
+
+## Laravel 14 and PHP 8.6
+
+Neither has been released yet, so the constraints (`illuminate/support: ^12.0|^13.0|^14.0`,
+`php: ^8.4`) are deliberately forward-looking and **untested** against them. When they ship,
+add them to the CI matrix in `.github/workflows/tests.yml` and cut a release.
+
+## Documentation
+
+The upstream documentation still applies: <https://voyager-docs.devdojo.com/>
+
+## Credits
+
+- [Tony Lea](https://github.com/tnylea) and The Control Group — original author of Voyager
+- [kupidonkhv](https://github.com/kupidonkhv/voyager) — the Laravel 12 fork this one is based on
+- [Sinan Eldem](https://www.sinaneldem.com.tr) — current maintainer
+
+## License
+
+Voyager is open-sourced software licensed under the [MIT license](license).

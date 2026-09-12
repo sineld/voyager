@@ -2,8 +2,9 @@
 
 namespace TCG\Voyager\Tests;
 
-use Doctrine\DBAL\Schema\SchemaException;
+use TCG\Voyager\Exceptions\TableDoesNotExistException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use TCG\Voyager\Database\Schema\SchemaManager;
 use TCG\Voyager\Database\Schema\Table;
 use TCG\Voyager\Database\Types\Type;
@@ -62,7 +63,9 @@ class DatabaseTest extends TestCase
         $details = $dbTable->getColumn('details');
         // Column Type
         $this->assertEquals('integer', $id->getType()->getName());
-        $this->assertEquals('json', $details->getType()->getName());
+        // SQLite has no native JSON type and reports the column as TEXT.
+        $jsonType = DB::connection()->getDriverName() === 'sqlite' ? 'text' : 'json';
+        $this->assertEquals($jsonType, $details->getType()->getName());
         // Column auto increment
         $this->assertTrue($id->getAutoIncrement());
         // Column not null
@@ -120,7 +123,7 @@ class DatabaseTest extends TestCase
         ]);
 
         $this->assertSessionHasAll(
-            $this->alertException(SchemaException::tableDoesNotExist($table['name']))
+            $this->alertException(new TableDoesNotExistException($table['name']))
         );
     }
 

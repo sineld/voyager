@@ -299,20 +299,44 @@ class Voyager
             return;
         }
 
-        if ($this->filesystem->exists(base_path('composer.lock'))) {
-            // Get the composer.lock file
-            $file = json_decode(
-                $this->filesystem->get(base_path('composer.lock'))
-            );
+        $this->version = '';
 
-            // Loop through all the packages and get the version of voyager
-            foreach ($file->packages as $package) {
-                if ($package->name == 'tcg/voyager') {
-                    $this->version = $package->version;
-                    break;
-                }
+        if (!$this->filesystem->exists(base_path('composer.lock'))) {
+            return;
+        }
+
+        $lock = json_decode($this->filesystem->get(base_path('composer.lock')));
+        $name = $this->packageName();
+
+        // Look in both sections; a fork may legitimately be a dev dependency.
+        foreach (array_merge($lock->packages ?? [], $lock->{'packages-dev'} ?? []) as $package) {
+            if ($package->name === $name) {
+                $this->version = $package->version;
+
+                return;
             }
         }
+    }
+
+    /**
+     * This package's own Composer name.
+     *
+     * Read from the shipped composer.json rather than hardcoded, so forks report
+     * their own version instead of silently showing nothing.
+     */
+    protected function packageName(): string
+    {
+        $manifest = dirname(__DIR__).'/composer.json';
+
+        if ($this->filesystem->exists($manifest)) {
+            $name = json_decode($this->filesystem->get($manifest))->name ?? null;
+
+            if (is_string($name) && $name !== '') {
+                return $name;
+            }
+        }
+
+        return 'tcg/voyager';
     }
 
     /**

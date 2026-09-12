@@ -23,8 +23,10 @@ abstract class Index
             $isPrimary = ($type == static::PRIMARY);
             $isUnique = $isPrimary || ($type == static::UNIQUE);
         } else {
-            $isPrimary = $index['is_primary'] ?? $index['isPrimary'] ?? false;
-            $isUnique = $index['is_unique'] ?? $index['isUnique'] ?? false;
+            // `primary`/`unique` come from Laravel's schema reader,
+            // the snake/camel variants from Voyager's own editor payloads.
+            $isPrimary = $index['primary'] ?? $index['is_primary'] ?? $index['isPrimary'] ?? false;
+            $isUnique = $index['unique'] ?? $index['is_unique'] ?? $index['isUnique'] ?? $isPrimary;
 
             // Set the type
             if ($isPrimary) {

@@ -2,33 +2,20 @@ name: Compile Assets
 
 on:
   push:
-    branches:
-      - '1.*'
+    branches: [main]
     paths:
       - 'resources/assets/**'
       - 'package.json'
+      - 'webpack.mix.js'
+  workflow_dispatch:
 
 jobs:
-  compile-assets:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Compile Assets
-        run: npm run prod
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        id: cpr
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Compile Assets
-          commit-message: 'Automatic assets compilation'
-          labels: automerge
+          node-version: '20'
+      - run: npm ci
+      - run: npm run production

@@ -43,7 +43,9 @@ class Table
     public function setPrimaryKey($columns, $name = 'primary')
     {
         $this->primaryKeyName = $name;
-        return $this;
+
+        // Register a real index too, otherwise toArray() loses the primary key.
+        return $this->addPrimaryKey($columns, $name);
     }
 
     public static function make($table)
@@ -75,6 +77,83 @@ class Table
         $options = $table['options'];
 
         return new self($name, $columns, $indexes, $foreignKeys, $options);
+    }
+
+    public function hasColumn($name)
+    {
+        return isset($this->columns[$name]);
+    }
+
+    public function getColumn($name)
+    {
+        if (!isset($this->columns[$name])) {
+            throw new \RuntimeException("Column {$name} does not exist on table {$this->name}");
+        }
+
+        return $this->columns[$name];
+    }
+
+    public function removeColumn($name)
+    {
+        unset($this->columns[$name]);
+
+        return $this;
+    }
+
+    public function hasIndex($name)
+    {
+        return isset($this->indexes[$name]);
+    }
+
+    public function getIndex($name)
+    {
+        if (!isset($this->indexes[$name])) {
+            throw new \RuntimeException("Index {$name} does not exist on table {$this->name}");
+        }
+
+        return $this->indexes[$name];
+    }
+
+    public function addIndex($columns, $name = null, $type = Index::INDEX)
+    {
+        $columns = (array) $columns;
+        $name = $name ?: Index::createName($columns, strtolower($type), $this->name);
+
+        $this->indexes[$name] = Index::make([
+            'name'    => $name,
+            'columns' => $columns,
+            'type'    => $type,
+        ]);
+
+        return $this;
+    }
+
+    public function addUniqueIndex($columns, $name = null)
+    {
+        return $this->addIndex($columns, $name, Index::UNIQUE);
+    }
+
+    public function addPrimaryKey($columns, $name = 'primary')
+    {
+        return $this->addIndex($columns, $name, Index::PRIMARY);
+    }
+
+    public function getPrimaryKey()
+    {
+        foreach ($this->indexes as $index) {
+            if ($index->isPrimary()) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    public function getPrimaryKeyColumns()
+    {
+        $primary = $this->getPrimaryKey();
+
+        return $primary ? $primary->getColumns() : [];
     }
 
     public function getName()

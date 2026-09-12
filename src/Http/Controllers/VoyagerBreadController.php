@@ -23,18 +23,8 @@ class VoyagerBreadController extends Controller
 
         $dataTypes = Voyager::model('DataType')->select('id', 'name', 'slug')->get()->keyBy('name')->toArray();
 
-        // Get tables only from current database
-        $currentDb = DB::getDatabaseName();
-        $tablesFromDb = DB::select("
-            SELECT TABLE_NAME as name 
-            FROM information_schema.tables 
-            WHERE table_schema = ? 
-            AND table_type = 'BASE TABLE'
-            ORDER BY TABLE_NAME
-        ", [$currentDb]);
-
-        $tables = array_map(function ($tableInfo) use ($dataTypes) {
-            $tableName = Str::replaceFirst(DB::getTablePrefix(), '', $tableInfo->name);
+        $tables = array_map(function ($name) use ($dataTypes) {
+            $tableName = Str::replaceFirst(DB::getTablePrefix(), '', $name);
 
             $table = [
                 'prefix'     => DB::getTablePrefix(),
@@ -44,7 +34,7 @@ class VoyagerBreadController extends Controller
             ];
 
             return (object) $table;
-        }, $tablesFromDb);
+        }, SchemaManager::listTableNames());
 
         return Voyager::view('voyager::tools.bread.index')->with(compact('dataTypes', 'tables'));
     }

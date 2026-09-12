@@ -1,39 +1,54 @@
 {
-  "name": "kupidonkhv/voyager-fork",
-  "description": "A Laravel Admin Package for The Control Group to make your life easier and steer your project in the right direction",
+  "name": "sineld/voyager",
+  "description": "Voyager — the missing Laravel admin. Maintained fork supporting Laravel 12/13/14 on PHP 8.4+.",
   "keywords": [
     "laravel",
     "admin",
-    "panel"
+    "panel",
+    "bread",
+    "crud",
+    "voyager"
   ],
   "license": "MIT",
-  "homepage": "https://voyager.devdojo.com/",
+  "homepage": "https://github.com/sineld/voyager",
   "support": {
-    "issues": "https://github.com/the-control-group/voyager/issues",
-    "source": "https://github.com/the-control-group/voyager"
+    "issues": "https://github.com/sineld/voyager/issues",
+    "source": "https://github.com/sineld/voyager"
   },
   "authors": [
     {
+      "name": "Sinan Eldem",
+      "email": "sinan@sinaneldem.com.tr",
+      "homepage": "https://www.sinaneldem.com.tr",
+      "role": "Maintainer"
+    },
+    {
       "name": "Kupidonkhv",
-      "email": "kupidonkhv13@gmail.com"
+      "email": "kupidonkhv13@gmail.com",
+      "role": "Previous maintainer"
+    },
+    {
+      "name": "Tony Lea",
+      "email": "tony.lea@thecontrolgroup.com",
+      "role": "Original author"
     }
   ],
   "require": {
-    "php": "^8.2|^8.3",
-    "illuminate/support": "^10.0|^11.0|^12.0",
-    "intervention/image": "^3.7",
-    "intervention/image-laravel": "^1.5",
-    "laravel/ui": "^4.0",
-    "arrilot/laravel-widgets": "^3.14",
-    "league/flysystem": "^3.0",
-    "ext-json": "*"
+    "php": "^8.4",
+    "ext-json": "*",
+    "arrilot/laravel-widgets": "^3.15",
+    "illuminate/support": "^12.0|^13.0|^14.0",
+    "intervention/image": "^3.11",
+    "intervention/image-laravel": "^1.5.9",
+    "laravel/ui": "^4.6",
+    "league/flysystem": "^3.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^10.0",
-    "laravel/framework": "^10.0|^11.0|^12.0",
-    "orchestra/testbench": "^9.0",
-    "laravel/browser-kit-testing": "^7.0",
-    "orchestra/testbench-browser-kit": "^9.0"
+    "laravel/browser-kit-testing": "^7.2.8",
+    "laravel/framework": "^12.0|^13.0|^14.0",
+    "orchestra/testbench": "^10.0|^11.0",
+    "orchestra/testbench-browser-kit": "^10.0|^11.0",
+    "phpunit/phpunit": "^11.5|^12.0|^13.0"
   },
   "autoload": {
     "psr-4": {
@@ -48,6 +63,7 @@
     }
   },
   "minimum-stability": "stable",
+  "prefer-stable": true,
   "extra": {
     "laravel": {
       "providers": [
@@ -56,9 +72,16 @@
       ]
     }
   },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
+  },
   "scripts": {
     "post-autoload-dump": [
       "@php vendor/bin/testbench package:discover --ansi"
-    ]
+    ],
+    "test": "vendor/bin/phpunit"
   }
 }

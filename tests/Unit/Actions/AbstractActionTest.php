@@ -2,11 +2,13 @@
 
 namespace TCG\Voyager\Tests\Unit\Actions;
 
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use TCG\Voyager\Actions\AbstractAction;
 use TCG\Voyager\Facades\Voyager;
 use TCG\Voyager\Models\User;
 use TCG\Voyager\Tests\TestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class AbstractActionTest extends TestCase
 {
     /**
@@ -39,14 +41,13 @@ class AbstractActionTest extends TestCase
     {
         $stub = $this->getMockBuilder(AbstractAction::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getDefaultRoute'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getDefaultRoute', 'getTitle', 'getIcon'])
+            ->getMock();
 
         // The `getDefaultRoute` method is called as default inside the
         // `getRoute` method to retrieve the route.
-        $stub->expects($this->any())
-             ->method('getDefaultRoute')
-             ->will($this->returnValue(true));
+        $stub->method('getDefaultRoute')
+             ->willReturn(true);
 
         $this->assertTrue($stub->getRoute($this->userDataType->name));
     }
@@ -57,17 +58,31 @@ class AbstractActionTest extends TestCase
      */
     public function testGetRouteWithCustomKey()
     {
-        $stub = $this->getMockBuilder(AbstractAction::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['getCustomRoute'])
-            ->getMockForAbstractClass();
+        // The key passed to `getRoute` is capitalized and placed between 'get'
+        // and 'Route', so `getRoute('custom')` calls `getCustomRoute()` when the
+        // action defines it. PHPUnit 13 dropped addMethods(), so declare it for real.
+        $stub = new class($this->userDataType, $this->user) extends AbstractAction
+        {
+            public function getTitle()
+            {
+                return 'custom';
+            }
 
-        // The key that's passed to the `getRoute` method will be capitalized
-        // and putted between 'get' and 'Route'. Calling `getRoute('custom')`
-        // will call the `getCustomRoute` method if it's defined.
-        $stub->expects($this->any())
-             ->method('getCustomRoute')
-             ->will($this->returnValue(true));
+            public function getIcon()
+            {
+                return 'voyager-plus';
+            }
+
+            public function getDefaultRoute()
+            {
+                return false;
+            }
+
+            public function getCustomRoute()
+            {
+                return true;
+            }
+        };
 
         $this->assertTrue($stub->getRoute('custom'));
     }
@@ -80,16 +95,15 @@ class AbstractActionTest extends TestCase
     {
         $stub = $this->getMockBuilder(AbstractAction::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getAttributes'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getAttributes', 'getTitle', 'getIcon', 'getDefaultRoute'])
+            ->getMock();
 
-        $stub->expects($this->any())
-             ->method('getAttributes')
-             ->will($this->returnValue([
+        $stub->method('getAttributes')
+             ->willReturn([
                  'class'   => 'class1 class2',
                  'data-id' => 5,
                  'id'      => 'delete-5',
-             ]));
+             ]);
 
         $this->assertEquals('class="class1 class2" data-id="5" id="delete-5"', $stub->convertAttributesToHtml());
     }
@@ -102,7 +116,8 @@ class AbstractActionTest extends TestCase
     {
         $stub = $this->getMockBuilder(AbstractAction::class)
             ->setConstructorArgs([$this->userDataType, $this->user])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getTitle', 'getIcon', 'getDefaultRoute'])
+            ->getMock();
 
         $this->assertTrue($stub->shouldActionDisplayOnDataType());
     }
@@ -115,12 +130,11 @@ class AbstractActionTest extends TestCase
     {
         $stub = $this->getMockBuilder(AbstractAction::class)
             ->setConstructorArgs([$this->userDataType, $this->user])
-            ->onlyMethods(['getDataType'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getDataType', 'getTitle', 'getIcon', 'getDefaultRoute'])
+            ->getMock();
 
-        $stub->expects($this->any())
-             ->method('getDataType')
-             ->will($this->returnValue($this->userDataType->name));
+        $stub->method('getDataType')
+             ->willReturn($this->userDataType->name);
 
         $this->assertTrue($stub->shouldActionDisplayOnDataType());
     }
@@ -133,12 +147,11 @@ class AbstractActionTest extends TestCase
     {
         $stub = $this->getMockBuilder(AbstractAction::class)
             ->setConstructorArgs([$this->userDataType, $this->user])
-            ->onlyMethods(['getDataType'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getDataType', 'getTitle', 'getIcon', 'getDefaultRoute'])
+            ->getMock();
 
-        $stub->expects($this->any())
-             ->method('getDataType')
-             ->will($this->returnValue('not users')); // different data type
+        $stub->method('getDataType')
+             ->willReturn('not users'); // different data type
 
         $this->assertFalse($stub->shouldActionDisplayOnDataType());
     }

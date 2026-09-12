@@ -18,6 +18,9 @@ class UserFactory extends Factory
             'email'          => $this->faker->unique()->safeEmail(),
             'password'       => $password ?: $password = bcrypt('secret'),
             'remember_token' => Str::random(10),
+            // Voyager users always belong to a role; the column is NOT NULL in the
+            // test schema, so give the factory a real one instead of relying on a default.
+            'role_id'        => RoleFactory::new(),
         ];
     }
 }

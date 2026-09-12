@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-09-13
+
+First release of `sineld/voyager`, forked from `kupidonkhv/voyager-fork` v1.7.43.
+
+### Added
+- Laravel 13 support; constraints opened to Laravel 14 and PHP 8.6 ahead of their release.
+- `SchemaManager::createTable()`, which was called by the Database controller but never defined.
+- `DatabaseUpdater::updateTable()` reimplemented on Laravel's native schema builder —
+  add/drop/rename/change columns, add/drop indexes, rename tables.
+- `SchemaBuilder`, translating Voyager table objects into Blueprint calls.
+- `ImageFactory`, building Intervention's `ImageManager` from `config/image.php` without
+  going through the shared `image` container binding.
+- `DateFormatter`, accepting both strftime and PHP `date()` BREAD formats.
+- `TableDoesNotExistException`, replacing Doctrine's `SchemaException`.
+- CI matrix over PHP 8.4/8.5 × Laravel 12/13.
+
+### Fixed
+- PostgreSQL fatal: 47 type classes imported `Doctrine\DBAL\Platforms\AbstractPlatform`,
+  which is not installed.
+- MySQL-only `information_schema` queries in BREAD and Database listings replaced with
+  `Schema::getTableListing()`; SQLite and PostgreSQL work again.
+- Media manager uploads: migrated from the Intervention Image v2 API and the removed
+  `Intervention\Image\Facades\Image` facade to v3.
+- Laravel 13 claims the `image` container binding for its own image abstraction, which
+  could hand Voyager the wrong manager.
+- BREAD image handlers hardcoded the GD driver and ignored an Imagick configuration.
+- `Carbon::formatLocalized()` removal in Carbon 3 caused a 500 on every BREAD with a
+  formatted date/timestamp column.
+- Column defaults gained a pair of quotes on every save.
+- Laravel's schema keys (`nullable`, `auto_increment`, `primary`, `unique`) were not mapped
+  to Voyager's (`notnull`, `autoincrement`, `is_primary`, `is_unique`).
+- `Column::getNotnull()` returned the inverse of the truth.
+- `Table::setPrimaryKey()` recorded a name but never registered an index.
+- `findVersion()` hardcoded `tcg/voyager`, so forks reported an empty version.
+- PHP 8.4 implicit-nullable deprecations in `Column::make()` and `Translatable::getTranslationsOf()`.
+- Debug `file_put_contents()` to `storage/logs/voyager_debug.log` left in `Column::make()`.
+- Test suite modernised for PHPUnit 13 (removed `getMockForAbstractClass()`,
+  `returnValue()`, `addMethods()`, doc-comment metadata) — 135 tests, 902 assertions, green.
+
+
 ## [1.7.7] - 2025-09-13
 
 ### 🚀 Laravel 12 Compatibility

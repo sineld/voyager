@@ -4,8 +4,7 @@ namespace TCG\Voyager\Http\Controllers\ContentTypes;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use TCG\Voyager\Support\ImageFactory;
 
 class Image extends BaseType
 {
@@ -19,7 +18,7 @@ class Image extends BaseType
             $filename = $this->generateFileName($file, $path);
 
 
-            $manager = new ImageManager(new Driver());
+            $manager = ImageFactory::make();
             $image = $manager->read($file->getPathname())->orient();
 
 

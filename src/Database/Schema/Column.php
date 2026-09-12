@@ -27,7 +27,7 @@ class Column
         $this->options = $options;
     }
 
-    public static function make(array $column, string $tableName = null)
+    public static function make(array $column, ?string $tableName = null)
     {
         $name = Identifier::validate($column['name'], 'Column');
         $type = $column['type'];
@@ -44,9 +44,6 @@ class Column
             // Handle string type names
             $typeObj = Type::getType($type);
             if (!$typeObj) {
-                // Debug: log what type we're trying to find
-                file_put_contents(storage_path('logs/voyager_debug.log'), 
-                    "DEBUG: Trying to find type: '{$type}'\n", FILE_APPEND);
                 throw new \RuntimeException("Type {$type} not found");
             }
             $type = $typeObj;
@@ -58,7 +55,49 @@ class Column
 
         $options = array_diff_key($column, array_flip(['name', 'composite', 'oldName', 'null', 'extra', 'type', 'charset', 'collation']));
 
+        if (array_key_exists('default', $options)) {
+            $options['default'] = static::normalizeDefault($options['default']);
+        }
+
+        // Laravel's schema reader speaks `nullable`/`auto_increment`; Voyager's editor
+        // speaks `notnull`/`autoincrement`. Normalize so both sources agree.
+        if (array_key_exists('nullable', $options) && !array_key_exists('notnull', $options)) {
+            $options['notnull'] = !$options['nullable'];
+        }
+
+        if (array_key_exists('auto_increment', $options) && !array_key_exists('autoincrement', $options)) {
+            $options['autoincrement'] = (bool) $options['auto_increment'];
+        }
+
         return new self($name, $type, $options);
+    }
+
+    /**
+     * Drivers report column defaults as SQL literals ("'voyager admin'", "(now())").
+     * Strip the quoting so the editor shows the value itself and re-saving does not
+     * wrap it in another pair of quotes every time.
+     */
+    protected static function normalizeDefault($default)
+    {
+        if (!is_string($default)) {
+            return $default;
+        }
+
+        $value = trim($default);
+
+        if (strlen($value) >= 2) {
+            $first = $value[0];
+            $last = $value[strlen($value) - 1];
+
+            if (($first === "'" && $last === "'") || ($first === '"' && $last === '"')) {
+                $value = substr($value, 1, -1);
+
+                // Un-escape the doubled quotes SQL uses inside literals.
+                $value = str_replace($first.$first, $first, $value);
+            }
+        }
+
+        return $value;
     }
 
     public function getName()
@@ -83,7 +122,44 @@ class Column
 
     public function getNotnull()
     {
-        return !($this->options['notnull'] ?? true);
+        return (bool) ($this->options['notnull'] ?? false);
+    }
+
+    public function getDefault()
+    {
+        return $this->options['default'] ?? null;
+    }
+
+    public function getLength()
+    {
+        return $this->options['length'] ?? null;
+    }
+
+    public function getPrecision()
+    {
+        return $this->options['precision'] ?? null;
+    }
+
+    public function getScale()
+    {
+        return $this->options['scale'] ?? null;
+    }
+
+    public function getUnsigned()
+    {
+        return (bool) ($this->options['unsigned'] ?? false);
+    }
+
+    public function getComment()
+    {
+        return $this->options['comment'] ?? null;
+    }
+
+    public function setOption($key, $value)
+    {
+        $this->options[$key] = $value;
+
+        return $this;
     }
 
     /**
