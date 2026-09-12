@@ -5,6 +5,7 @@ namespace TCG\Voyager\Http\Controllers;
 use Artisan;
 use Exception;
 use Illuminate\Http\Request;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class VoyagerCompassController extends Controller
@@ -69,8 +70,12 @@ class VoyagerCompassController extends Controller
             $args = (isset($args)) ? ' '.$args : '';
 
             try {
-                Artisan::call($command.$args);
-                $artisan_output = Artisan::output();
+                // Pass an explicit buffer: Laravel renders generator output through
+                // Termwind, which does not reliably reach Artisan::output() when there
+                // is no TTY (web requests, CI), leaving the console tab blank.
+                $buffer = new BufferedOutput();
+                Artisan::call($command.$args, [], $buffer);
+                $artisan_output = $buffer->fetch();
             } catch (Exception $e) {
                 $artisan_output = $e->getMessage();
             }
@@ -89,10 +94,10 @@ class VoyagerCompassController extends Controller
 
     private function getArtisanCommands()
     {
-        Artisan::call('list');
+        $buffer = new BufferedOutput();
+        Artisan::call('list', [], $buffer);
 
-        // Get the output from the previous command
-        $artisan_output = Artisan::output();
+        $artisan_output = $buffer->fetch();
         $artisan_output = $this->cleanArtisanOutput($artisan_output);
         $commands = $this->getCommandsFromOutput($artisan_output);
 
