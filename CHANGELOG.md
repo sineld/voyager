@@ -38,6 +38,12 @@ First release of `sineld/voyager`, forked from `kupidonkhv/voyager-fork` v1.7.43
 - `findVersion()` hardcoded `tcg/voyager`, so forks reported an empty version.
 - PHP 8.4 implicit-nullable deprecations in `Column::make()` and `Translatable::getTranslationsOf()`.
 - Debug `file_put_contents()` to `storage/logs/voyager_debug.log` left in `Column::make()`.
+- Voyager silently took over Laravel 13's `make:model`: Symfony reads
+  `#[AsCommand(name: 'make:model')]` from the parent class when a subclass does not
+  declare its own name, and the inherited command then rejected every run with
+  "The softdelete option does not exist."
+- Compass command output came back blank without a TTY, because Laravel renders
+  generator output through Termwind; Compass now passes an explicit output buffer.
 - Test suite modernised for PHPUnit 13 (removed `getMockForAbstractClass()`,
   `returnValue()`, `addMethods()`, doc-comment metadata) — 135 tests, 902 assertions, green.
 
