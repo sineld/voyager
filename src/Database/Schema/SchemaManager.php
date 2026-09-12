@@ -112,12 +112,20 @@ abstract class SchemaManager
     /**
      * Table names of the current connection, driver agnostic.
      *
-     * Laravel scopes getTableListing() to the connection's own database/schema,
-     * so this works the same on MySQL, MariaDB, PostgreSQL, SQLite and SQL Server.
+     * The schema has to be passed explicitly: with no schema Laravel lists every
+     * database the connection user can see, so a shared MySQL server would show
+     * thousands of foreign tables here.
      */
     public static function listTableNames()
     {
-        $tableNames = LaravelSchema::getTableListing(schemaQualified: false);
+        $builder = LaravelSchema::getFacadeRoot();
+
+        $tableNames = $builder->getTableListing(
+            $builder->getCurrentSchemaListing(),
+            schemaQualified: false
+        );
+
+        $tableNames = array_values(array_unique($tableNames));
 
         sort($tableNames);
 

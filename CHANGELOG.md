@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-09-13
+
+### Fixed
+- Table listings showed every database the connection user could see instead of the
+  current one. Laravel's `getTableListing()` does not scope to the connection's own
+  schema unless the schema is passed explicitly, so on a shared MySQL server the
+  BREAD and Database screens listed thousands of foreign tables, many duplicated.
+  Regression from 2.0.0, which replaced the old MySQL-only `information_schema`
+  query; the test suite runs on SQLite, where there is only one schema, so it went
+  unnoticed. Covered by a test that attaches a second schema.
+
 ## [2.0.0] - 2026-09-13
 
 First release of `sineld/voyager`, forked from `kupidonkhv/voyager-fork` v1.7.43.

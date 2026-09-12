@@ -228,6 +228,25 @@ class DatabaseTest extends TestCase
         $this->assertTrue($dbTable->getIndex($indexName)->isUnique());
     }
 
+    /**
+     * Listing tables without naming a schema makes Laravel return every database the
+     * connection can see, which on a shared server means thousands of foreign tables.
+     */
+    public function test_table_listing_is_scoped_to_the_current_schema()
+    {
+        DB::statement("attach database ':memory:' as other_schema");
+        DB::statement('create table other_schema.a_foreign_table (id integer)');
+
+        try {
+            $tables = SchemaManager::listTableNames();
+
+            $this->assertContains($this->table['name'], $tables);
+            $this->assertNotContains('a_foreign_table', $tables);
+        } finally {
+            DB::statement('detach database other_schema');
+        }
+    }
+
     protected function update_table(array $table)
     {
         // Update table
