@@ -66,7 +66,11 @@ class CompassTest extends TestCase
             'command' => 'make:model',
             'args'    => 'TestModel',
         ]);
-        $this->assertStringContainsString('created successfully.', $response->response->content());
+        // Artisan renders generator output through Termwind, which wraps to the
+        // terminal width; collapse whitespace so the assertion does not depend on it.
+        $output = preg_replace('/\s+/', ' ', $response->response->content());
+
+        $this->assertStringContainsString('created successfully.', $output);
     }
 
     public function testCannotExecuteUnknownCommand()
