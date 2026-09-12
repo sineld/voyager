@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2026-09-13
+
+### Fixed
+- `Type::$customOptions` and `Type::$tableName` were created as dynamic properties,
+  which PHP 8.2 deprecated and PHP 9 removes. Declared on the base type, so working
+  with the Database editor no longer fills the log with deprecation notices.
+
 ## [2.0.1] - 2026-09-13
 
 ### Fixed

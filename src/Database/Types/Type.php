@@ -16,6 +16,22 @@ abstract class Type
     protected static $customTypeOptions = [];
     protected static $typeCategories = [];
 
+    /**
+     * Options attached to a concrete type instance by registerCustomPlatformTypes().
+     *
+     * Declared explicitly: PHP 8.2 deprecated dynamic properties and PHP 9 removes them.
+     *
+     * @var array
+     */
+    public $customOptions = [];
+
+    /**
+     * Table the type was resolved for; EnumType needs it to read the allowed values.
+     *
+     * @var string|null
+     */
+    public $tableName = null;
+
     public const NAME = 'UNDEFINED_TYPE_NAME';
     public const NOT_SUPPORTED = 'notSupported';
     public const NOT_SUPPORT_INDEX = 'notSupportIndex';
