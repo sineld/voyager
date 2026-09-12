@@ -66,11 +66,9 @@ class CompassTest extends TestCase
             'command' => 'make:model',
             'args'    => 'TestModel',
         ]);
-        // Artisan renders generator output through Termwind, which wraps to the
-        // terminal width; collapse whitespace so the assertion does not depend on it.
-        $output = preg_replace('/\s+/', ' ', $response->response->content());
+        $output = $this->commandOutput($response->response->content());
 
-        $this->assertStringContainsString('created successfully.', $output);
+        $this->assertStringContainsString('created successfully.', $output, "Command output was:\n{$output}");
     }
 
     public function testCannotExecuteUnknownCommand()
@@ -81,7 +79,9 @@ class CompassTest extends TestCase
             'command' => 'unknown:command',
             'args'    => 'AnArgument',
         ]);
-        $this->assertStringContainsString('The command &quot;unknown:command&quot; does not exist.', $response->response->content());
+        $output = $this->commandOutput($response->response->content());
+
+        $this->assertStringContainsString('The command "unknown:command" does not exist.', $output, "Command output was:\n{$output}");
     }
 
     public function testCanDeleteLaravelLog()
@@ -90,5 +90,17 @@ class CompassTest extends TestCase
 
         $response = $this->call('GET', route('voyager.compass.index').'?del='.base64_encode('laravel.log'));
         $this->assertEquals(302, $response->status()); // Redirect
+    }
+    /**
+     * Pull just the artisan output out of the rendered Compass page, so a failure
+     * reports the command output instead of the whole admin page.
+     */
+    protected function commandOutput(string $html): string
+    {
+        if (preg_match('/<span class="art_out">.*?<\/span>(.*?)<\/pre>/s', $html, $m)) {
+            $html = $m[1];
+        }
+
+        return trim(html_entity_decode(preg_replace('/\s+/', ' ', strip_tags($html))));
     }
 }
