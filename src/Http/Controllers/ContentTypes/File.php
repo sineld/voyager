@@ -18,6 +18,7 @@ class File extends BaseType
         }
 
         $files = Arr::wrap($this->request->file($this->row->field));
+        $this->ensureAllowedFileNames($files);
 
         $filesPath = [];
         $path = $this->generatePath();

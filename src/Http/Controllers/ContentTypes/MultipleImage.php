@@ -22,6 +22,8 @@ class MultipleImage extends BaseType
             return;
         }
 
+        $this->ensureAllowedFileNames(array_filter($files, fn ($file) => $file->isValid()));
+
         foreach ($files as $file) {
             if (!$file->isValid()) {
                 continue;
