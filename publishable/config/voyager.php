@@ -231,6 +231,16 @@ return [
           'image/bmp',
           'video/mp4',
         ],
+        // The allowed file extensions for the media manager and BREAD uploads; '*' allows any.
+        // php, phtml, phar, .htaccess and other executable names are always refused.
+        'allowed_extensions' => [
+            'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'avif', 'svg', 'ico', 'tif', 'tiff',
+            'mp4', 'm4v', 'mov', 'webm', 'ogv', 'avi', 'mkv', 'wmv',
+            'mp3', 'm4a', 'wav', 'ogg', 'oga', 'flac', 'aac',
+            'pdf', 'txt', 'csv', 'rtf', 'md', 'json',
+            'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odp',
+            'zip', 'rar', '7z', 'gz', 'tar',
+        ],
         //Path for media-manager. Relative to the filesystem.
         'path'                => '/',
         'show_folders'        => true,
