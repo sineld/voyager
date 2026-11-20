@@ -12,6 +12,8 @@ return [
     'error_creating_dir'     => 'Sorry something seems to have gone wrong with creating the directory, please check your permissions',
     'error_deleting_file'    => 'Sorry something seems to have gone wrong deleting this file, please check your permissions',
     'error_deleting_folder'  => 'Sorry something seems to have gone wrong when deleting this folder, please check your permissions',
+    'error_extension_not_allowed' => 'This file type is not allowed.',
+    'error_invalid_path'     => 'Invalid file or folder path.',
     'error_may_exist'        => 'File or Folder may already exist with that name. Please choose another name or delete the other file.',
     'error_moving'           => 'Sorry there seems to be a problem moving that file/folder, please make sure you have the correct permissions.',
     'error_renaming_ext'     => 'The extension of a file can not be changed!',

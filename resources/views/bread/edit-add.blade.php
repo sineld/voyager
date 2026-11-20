@@ -53,7 +53,6 @@
                             <!-- Adding / Editing -->
                             @php
                                 $dataTypeRows = $dataType->{($edit ? 'editRows' : 'addRows' )};
-                                \Log::debug('DEBUG: dataTypeRows for ' . ($edit ? 'edit' : 'add') . ':', ['dataTypeRows' => $dataTypeRows, 'dataType' => $dataType->toArray()]);
                             @endphp
 
                             @if(!empty($dataTypeRows))

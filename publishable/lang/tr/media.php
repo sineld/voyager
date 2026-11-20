@@ -11,6 +11,8 @@ return [
     'error_creating_dir'     => 'Malesef dizin oluşturuken bir şeyler yolunda gitmedi, Lütfen izinlerinizi kontrol ediniz',
     'error_deleting_file'    => 'Bu dosyayı silerken bir sorun oluştu, lütfen izinlerinizi kontrol ediniz ',
     'error_deleting_folder'  => 'Malesef bu dizini silerken bir sorun oluştu, lütfen izinlerinizi kontrol ediniz',
+    'error_extension_not_allowed' => 'Bu dosya türüne izin verilmiyor.',
+    'error_invalid_path'     => 'Geçersiz dosya ya da klasör yolu.',
     'error_may_exist'        => 'Dosya/dizin ile aynı isimde bulunan bir kayıt olabilir lütfen ismini değiştirin',
     'error_moving'           => 'Bu dosya/dizini taşırken bir sorun oluştu , lütfen doğru izinlerinizin olduğuna emin olun',
     'error_uploading'        => 'Yükleme hatası: Unknown bilinmeyen bir hata oluştur',

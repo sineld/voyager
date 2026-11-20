@@ -12,6 +12,7 @@ class Image extends BaseType
     {
         if ($this->request->hasFile($this->row->field)) {
             $file = $this->request->file($this->row->field);
+            $this->ensureAllowedFileNames([$file]);
 
             $path = $this->slug.DIRECTORY_SEPARATOR.date('FY').DIRECTORY_SEPARATOR;
 

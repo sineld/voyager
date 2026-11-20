@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use TCG\Voyager\Support\ImageFactory;
+use TCG\Voyager\Support\SafeUpload;
 use TCG\Voyager\Facades\Voyager;
 
 class VoyagerController extends Controller
@@ -52,7 +53,7 @@ class VoyagerController extends Controller
 
         $ext = $file->guessClientExtension();
 
-        if (in_array($ext, ['jpeg', 'jpg', 'png', 'gif'])) {
+        if (in_array($ext, ['jpeg', 'jpg', 'png', 'gif']) && SafeUpload::isAllowedFileName(basename($fullPath))) {
             // scaleDown keeps the aspect ratio and never enlarges the original.
             $image = ImageFactory::make()->read($file)->scaleDown($resizeWidth, $resizeHeight);
 
