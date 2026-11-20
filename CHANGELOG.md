@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.0.3] - 2026-11-20
 
 ### Security
 - Arbitrary file write leading to remote code execution (CVE-2024-55417 class). The media
