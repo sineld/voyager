@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Security
+- Arbitrary file write leading to remote code execution (CVE-2024-55417 class). The media
+  manager stored uploads under the client-supplied extension, so an image polyglot named
+  `shell.php` passed the MIME check and was executed by PHP when requested from the
+  public disk. `TCG\Voyager\Support\SafeUpload` now refuses, case-insensitively and in
+  every dot-separated segment, `php`/`php3`–`php8`, `phtml`, `pht`, `phar`, `phps`,
+  `pgif`, `shtml`, `.htaccess`, `.htpasswd`, `.user.ini`, `cgi`, `pl`, `py`, `sh`,
+  `asp`, `aspx` and `jsp`, whatever the configuration says. Applied to media `upload()`
+  (after the `filename` placeholders are filled in, thumbnail names included),
+  `rename()` (old and new name), `crop()`, the BREAD `file`, `image` and
+  `multiple_images` handlers (validation error) and the rich-text image upload.
+- New `voyager.media.allowed_extensions` allowlist (images, audio, video, office
+  documents and archives by default; `'*'` disables it). A published config without the
+  key gets the same default list. Files without an extension remain allowed.
+- Media `upload_path`, `folder_location`, `new_folder`, `path`, `destination`, item
+  names and the watermark source are rejected with a clean error when they contain `..`
+  segments, null bytes or a drive letter, instead of relying on Flysystem. `move()` no
+  longer treats any destination containing `/../` as "parent folder"; only the media
+  manager's exact `/../` option does.
+
 ## [2.0.2] - 2026-09-13
 
 ### Fixed
